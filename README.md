@@ -86,8 +86,8 @@ Settings → General → Login Items.
 ### Option A — Direct download
 
 Grab `DockGlance-<version>.zip` from the
-[latest release](https://github.com/icrefin/DockGlance/releases) (GitHub) or
-GitHub Releases, unzip, and drag `DockGlance.app` into `/Applications`.
+[latest release](https://github.com/icrefin/DockGlance/releases), unzip,
+and drag `DockGlance.app` into `/Applications`.
 
 The app is ad-hoc signed (not notarized), so the first launch may trigger
 Gatekeeper. Right-click → **Open** once, or clear the quarantine flag:
@@ -195,9 +195,9 @@ Dock 旁边的空白条带上。
 
 ### 方式一：直接下载
 
-从[最新发布页](https://github.com/icrefin/DockGlance/releases)（GitHub）
-或 GitHub Releases 下载 `DockGlance-<version>.zip`，解压后把
-`DockGlance.app` 拖入 `/Applications`。
+从[最新发布页](https://github.com/icrefin/DockGlance/releases)下载
+`DockGlance-<version>.zip`，解压后把 `DockGlance.app` 拖入
+`/Applications`。
 
 应用为 ad-hoc 签名（未公证），首次启动可能触发 Gatekeeper。右键 →
 **打开**一次，或执行：
