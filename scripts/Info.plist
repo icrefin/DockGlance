@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>DockGlance</string>
+    <key>CFBundleIconFile</key>
+    <string>DockGlance</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.icrefin.dockglance</string>
+    <key>CFBundleName</key>
+    <string>DockGlance</string>
+    <key>CFBundleDisplayName</key>
+    <string>DockGlance</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${VERSION}</string>
+    <key>CFBundleVersion</key>
+    <string>${VERSION}</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>DockGlance shows the weather for your current location on its widget.</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>© icrefin</string>
+</dict>
+</plist>

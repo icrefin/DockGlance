@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release binary
+        run: |
+          swift package clean
+          swift build -c release
+
+      - name: Assemble DockGlance.app
+        run: |
+          APP="DockGlance.app"
+          VERSION="${GITHUB_REF_NAME#v}"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          cp .build/release/DockGlance "$APP/Contents/MacOS/DockGlance"
+          cp scripts/DockGlance.icns "$APP/Contents/Resources/DockGlance.icns"
+          sed "s|\${VERSION}|$VERSION|g" scripts/Info.plist > "$APP/Contents/Info.plist"
+          codesign --force --sign - "$APP"
+          ditto -c -k --keepParent "$APP" "DockGlance-$VERSION.zip"
+
+      - name: Create GitHub release and attach artifact
+        uses: softprops/action-gh-release@v2
+        with:
+          files: DockGlance-*.zip
+          generate_release_notes: true
