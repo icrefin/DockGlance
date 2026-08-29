@@ -35,6 +35,6 @@ SHA="$(shasum -a 256 "$BUILD_DIR/$APP_NAME-$VERSION.zip" | cut -d' ' -f1)"
 echo "==> $BUILD_DIR/$APP_NAME-$VERSION.zip  sha256=$SHA"
 
 # Stamp the cask with the new sha.
-CASK="$ROOT/Cask/dockglance.rb"
+CASK="$ROOT/Casks/dockglance.rb"
 sed -i '' "s|sha256 \"[a-f0-9]*\"|sha256 \"$SHA\"|" "$CASK"
 echo "==> updated $CASK"

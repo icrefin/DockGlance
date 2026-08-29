@@ -183,13 +183,12 @@ Repo: [https://github.com/icrefin/DockGlance](https://github.com/icrefin/DockGla
 
 ### GitHub (mirror)
 
-`git push origin main` with tags; a pre-configured GitHub Actions workflow
-(`.github/workflows/release.yml`) builds the app and attaches the zip to a
-GitHub Release whenever a `v*` tag lands. To mirror:
+A pre-configured GitHub Actions workflow (`.github/workflows/release.yml`)
+builds the app and attaches the zip to a GitHub Release whenever a `v*` tag
+lands on GitHub:
 
 ```sh
-git remote add github https://github.com/<you>/dockglance.git
-git push github main --tags
+git push origin main --tags   # origin = https://github.com/icrefin/DockGlance
 ```
 
 ---
@@ -344,11 +343,8 @@ VERSION=2.0.0 ./scripts/release.sh   # 需要 shell 中有 GITHUB_TOKEN（仓库
 ### GitHub（镜像）
 
 推送带 `v*` 标签的提交即可：`.github/workflows/release.yml` 会自动
-构建应用并把 zip 附加到 GitHub Release。镜像步骤：
+构建应用并把 zip 附加到 GitHub Release：
 
 ```sh
-git remote add github https://github.com/<you>/dockglance.git
-git push github main --tags
+git push origin main --tags   # origin = https://github.com/icrefin/DockGlance
 ```
-
-&nbsp;

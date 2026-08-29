@@ -1,9 +1,6 @@
 .build/
-.build-arm64/
-.build-x86_64/
-.zcode/
 *.zip
-Metrics.app/
 dist/
 .swiftpm/
+.zcode/
 .DS_Store
