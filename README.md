@@ -21,18 +21,16 @@ place to put yet another status readout.
 Meanwhile, the two strips of screen on the sides of the Dock sit empty
 almost all the time:
 
-- **No window covers them.** Full-screen apps extend *behind* the Dock, and
-the Dock's strip is normally excluded from window placement, so a truly
-"full-size" window never overlaps it.
-- **The system doesn't use them.** On a bottom Dock, the strip beside the
-icons is dead space; on a left/right Dock, the same applies to the top
-and bottom of that screen edge.
+- **No window covers them.** The strip the Dock occupies is normally
+excluded from window placement, so even "full-size" windows never
+overlap it.
+- **The system doesn't use them.** The space on either side of the Dock
+is dead area, serving no purpose.
 - **They're always in your peripheral vision.** Unlike a menu-bar icon you
 must hunt for, dock-side metrics are visible while you work.
 
 That's the spot DockGlance takes: a row of small, draggable, customizable
-cards sitting in the dead zone beside the Dock, above normal windows, in
-every Space.
+cards floating in the dead zone beside the Dock.
 
 > **⚠️ Auto-hide caveat:** DockGlance works best when the Dock is **always
 > visible**. If you enable *Automatically hide and show the Dock*, the Dock
@@ -60,9 +58,10 @@ every Space.
 | Weather           | Current conditions + temperature for your location     |
 
 
-Every card can be shown or hidden from the **Cards** menu. Cards fill the
-strip one by one from the left edge; when they would collide with the Dock
-icons, the remaining cards continue from the right side of the Dock.
+Every card can be individually configured in **Settings** — shown or
+hidden, reordered, and placed on the left or right. Cards fill the strip
+from both ends along the screen edge; when they would collide with the
+Dock icons, the remaining cards continue from the right side of the Dock.
 
 Additional flourishes:
 
@@ -97,15 +96,12 @@ Gatekeeper. Right-click → **Open** once, or clear the quarantine flag:
 xattr -dr com.apple.quarantine /Applications/DockGlance.app
 ```
 
-### Option B — Homebrew (GitHub tap)
+### Option B — Homebrew
 
 ```sh
 brew tap icrefin/dockglance https://github.com/icrefin/DockGlance.git
-GITHUB_TOKEN=<token> brew install --cask dockglance
+brew install --cask dockglance
 ```
-
-The cask needs `GITHUB_TOKEN` because GitHub download URLs require
-authentication.
 
 ### Option C — Build it yourself
 
@@ -128,18 +124,6 @@ rm -rf /Applications/DockGlance.app
 
 ---
 
-## How it works
-
-- The widget sits on the screen strip beside the **Dock**, whose edge is
-detected automatically from the screen's visible frame — it repositions
-if you move the Dock to another edge.
-- It floats above normal windows, in every Space. With a bottom Dock, cards
-start at the bottom-left corner and wrap to the bottom-right when they
-meet the Dock icons; with a left/right Dock they start at the top of that
-screen edge.
-- **Right-click** any card, or use the menu-bar icon, to toggle cards,
-switch profiles, toggle **Start at Login**, open settings or quit.
-
 ## Permissions
 
 
@@ -152,48 +136,9 @@ switch profiles, toggle **Start at Login**, open settings or quit.
 The app is **not sandboxed** — a sandbox would block the `sysctl`/Mach
 reads used for CPU/memory/temperature metrics.
 
-## Development
-
-```sh
-swift build               # debug build
-swift run DockGlance      # run the widget
-swift run DockGlanceTests # unit tests (no Xcode required)
-```
-
-The Dock-placement math lives in
-`Sources/DockGlanceCore/DockPosition.swift`, with tests in
-`Tests/DockGlanceTests/main.swift`. The diagnostic `--probe` flag prints a
-one-shot sample of every metric:
-
-```sh
-swift run DockGlance --probe
-```
-
-## Publishing
-
-### GitHub (primary)
-
-`./scripts/release.sh` builds the zip and publishes a release + artifact:
-
-```sh
-VERSION=2.0.0 ./scripts/release.sh   # requires GITHUB_TOKEN (repo scope) in your shell
-```
-
-Repo: [https://github.com/icrefin/DockGlance](https://github.com/icrefin/DockGlance)
-
-### GitHub (mirror)
-
-A pre-configured GitHub Actions workflow (`.github/workflows/release.yml`)
-builds the app and attaches the zip to a GitHub Release whenever a `v*` tag
-lands on GitHub:
-
-```sh
-git push origin main --tags   # origin = https://github.com/icrefin/DockGlance
-```
-
 ---
 
-# DockGlance（中文说明）
+# DockGlance
 
 > 在没人用的屏幕角落，一眼看清系统的全部状态。
 
@@ -211,18 +156,14 @@ macOS 菜单栏太挤了。每装一个应用都想往菜单栏塞图标，"刘�
 
 而 Dock 两侧的屏幕条带几乎永远空着：
 
-- **窗口盖不到它。** 全屏窗口是延伸到 Dock *后面*的，Dock 占据的条带
-通常被系统排除在窗口布局之外，所谓"满屏窗口"永远不会盖住它。
-- **系统不利用它。** Dock 在底部时，图标两侧是死区；Dock 在左右两侧
-时，这条屏幕边的上下两端同样闲置。
-- **它始终在你的余光里。** 菜单栏图标要专门去找，而 Dock 旁边的指标
-在工作时抬眼就能看到。
+- **窗口盖不到它。** Dock 占据的条带通常被系统排除在窗口布局之外，所谓"满屏窗口"不会盖住它。 
+- **系统不利用它。** Dock 两侧是死区，没什么用处。
+- **它始终在你的余光里。** 菜单栏图标要专门去找，而 Dock 旁边的指标在工作时抬眼就能看到。
 
-这正是 DockGlance 的位置：一行小巧、可拖动、可自定义的卡片，悬浮在
-Dock 旁边的空白条带上，位于普通窗口之上，并且每个 Space 都可见。
+这正是 DockGlance 的位置：一行小巧、可拖动、可自定义的卡片，悬浮在  
+Dock 旁边的空白条带上。
 
-> **⚠️ 自动隐藏 Dock 的注意事项：** DockGlance 的最佳使用方式是保持  
-> Dock **始终显示**。如果开启了"自动隐藏和显示程序坞”，窗口放大会盖住卡片，你伸手去屏幕边缘时还会和鼠标操作互相打架。请保持 Dock 固定显示。
+> **⚠️ 自动隐藏 Dock 的注意事项：** DockGlance 的最佳使用方式是保持Dock **始终显示**。如果开启了"自动隐藏和显示程序坞”，窗口放大会盖住卡片，你伸手去屏幕边缘时还会和鼠标操作互相打架。请保持 Dock 固定显示。
 
 ## 功能
 
@@ -242,8 +183,8 @@ Dock 旁边的空白条带上，位于普通窗口之上，并且每个 Space �
 | 天气      | 当前位置的天气与温度                    |
 
 
-每张卡片都可在 **Cards** 菜单中单独显示/隐藏。卡片从条带左端依次
-排列；遇到 Dock 图标时，剩余的卡片继续从 Dock 右侧排起。
+每张卡片都可在设置中单独设置显示/隐藏，排列顺序，左或右。卡片在左右两端沿屏幕边缘开始排列；  
+遇到 Dock 图标时，剩余的卡片继续从 Dock 右侧排起。
 
 其他亮点：
 
@@ -273,11 +214,11 @@ Dock 旁边的空白条带上，位于普通窗口之上，并且每个 Space �
 xattr -dr com.apple.quarantine /Applications/DockGlance.app
 ```
 
-### 方式二：Homebrew（GitHub tap）
+### 方式二：Homebrew
 
 ```sh
 brew tap icrefin/dockglance https://github.com/icrefin/DockGlance.git
-GITHUB_TOKEN=<token> brew install --cask dockglance
+brew install --cask dockglance
 ```
 
 DockGlance 以后台代理方式运行（`LSUIElement`）——没有 Dock 图标，也
@@ -289,16 +230,6 @@ DockGlance 以后台代理方式运行（`LSUIElement`）——没有 Dock 图�
 pkill -x DockGlance
 rm -rf /Applications/DockGlance.app
 ```
-
-## 工作原理
-
-- 组件驻留在 **Dock** 旁的屏幕条带上，Dock 边缘通过屏幕可见区域自动
-识别——把 Dock 移到其他位置时组件会自动重新定位。
-- 它悬浮于普通窗口之上，每个 Space 都可见。Dock 在底部时，卡片从
-左下角开始排列，碰到 Dock 图标后从右下角继续；Dock 在左右两侧时，
-从该屏幕边的顶部开始。
-- **右键**任意卡片，或使用菜单栏图标，可切换卡片显示、切换配置、
-开关**开机启动**、打开设置或退出。
 
 ## 权限
 
@@ -312,39 +243,4 @@ rm -rf /Applications/DockGlance.app
 应用**未沙盒化**——沙盒会阻止读取 CPU/内存/温度指标所需的
 `sysctl`/Mach 接口。
 
-## 开发
-
-```sh
-swift build               # 调试构建
-swift run DockGlance      # 运行组件
-swift run DockGlanceTests # 单元测试（无需 Xcode）
-```
-
-Dock 布局算法位于 `Sources/DockGlanceCore/DockPosition.swift`，测试在
-`Tests/DockGlanceTests/main.swift`。诊断参数 `--probe` 可一次性打印
-所有指标：
-
-```sh
-swift run DockGlance --probe
-```
-
-## 发布
-
-### GitHub（主仓库）
-
-`./scripts/release.sh` 负责打 zip 包并发布 release 与附件：
-
-```sh
-VERSION=2.0.0 ./scripts/release.sh   # 需要 shell 中有 GITHUB_TOKEN（仓库权限）
-```
-
-仓库：[https://github.com/icrefin/DockGlance](https://github.com/icrefin/DockGlance)
-
-### GitHub（镜像）
-
-推送带 `v*` 标签的提交即可：`.github/workflows/release.yml` 会自动
-构建应用并把 zip 附加到 GitHub Release：
-
-```sh
-git push origin main --tags   # origin = https://github.com/icrefin/DockGlance
-```
+ 
