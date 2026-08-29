@@ -103,14 +103,6 @@ brew tap icrefin/dockglance https://github.com/icrefin/DockGlance.git
 brew install --cask dockglance
 ```
 
-### Option C — Build it yourself
-
-```sh
-./scripts/make-app.sh                   # builds dist/DockGlance.app + zip
-cp -R dist/DockGlance.app /Applications/
-open /Applications/DockGlance.app
-```
-
 DockGlance runs as a background agent (`LSUIElement`) — no Dock icon and no
 menu-bar window of its own, just the widget and a small menu-bar icon for
 its menu.
@@ -242,5 +234,3 @@ rm -rf /Applications/DockGlance.app
 
 应用**未沙盒化**——沙盒会阻止读取 CPU/内存/温度指标所需的
 `sysctl`/Mach 接口。
-
- 
