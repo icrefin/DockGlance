@@ -1,6 +1,6 @@
 cask "dockglance" do
   version "2.0.1"
-  sha256 "e39b3b492c0ee255501faffd4faf2386a075feaf8c990c75349f93c76d7f74c9"
+  sha256 "34630b678388562e11acb1068b46057d9451921b54137e942c710b90a11b869e"
 
   url "https://github.com/icrefin/DockGlance/releases/download/v#{version}/DockGlance-#{version}.zip"
 
