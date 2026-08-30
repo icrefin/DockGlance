@@ -134,6 +134,17 @@ reads used for CPU/memory/temperature metrics.
 
 ---
 
+## Support
+
+If DockGlance is useful to you, consider buying the author a coffee ☕ — every
+little bit keeps this one-person project going.
+
+`if it works for you` — 扫码请作者喝杯咖啡 ☕
+
+![Reward QR code](screenshots/reward-qr.png "Scan with WeChat to support the author")
+
+---
+
 # DockGlance
 
 > 在没人用的屏幕角落，一眼看清系统的全部状态。
@@ -238,3 +249,12 @@ rm -rf /Applications/DockGlance.app
 
 应用**未沙盒化**——沙盒会阻止读取 CPU/内存/温度指标所需的
 `sysctl`/Mach 接口。
+
+---
+
+## 支持
+
+如果 DockGlance 对你有帮助，欢迎请作者喝杯咖啡 ☕——每一份支持都能让这个
+一人项目继续走下去。
+
+![赞赏码](screenshots/reward-qr.png "使用微信扫描赞赏码支持作者")
