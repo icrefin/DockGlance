@@ -10,6 +10,10 @@ clock, date and weather.
 No Xcode required to build — pure SwiftUI + AppKit, SwiftPM-only, built for
 macOS 14+ (arm64).
 
+## Screenshots
+
+![DockGlance on the Dock](screenshots/dock-glance.png)
+
 ---
 
 ## Why DockGlance?
