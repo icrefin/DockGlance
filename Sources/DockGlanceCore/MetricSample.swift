@@ -31,6 +31,13 @@ public struct MetricSample: Sendable {
     public let batteryIsCharging: Bool
     /// Minutes until fully charged (nil when not charging or unavailable).
     public let batteryMinutesToFull: Int?
+    /// Full-charge capacity over design capacity, 0...1 (nil when the
+    /// hardware or OS does not expose both capacities).
+    public let batteryHealthPercent: Double?
+    /// Battery charge cycles (nil when unavailable).
+    public let batteryCycleCount: Int?
+    /// macOS battery condition: "Good", "Fair" or "Poor" (nil when unknown).
+    public let batteryCondition: String?
     /// Process thermal state when temperature could not be read.
     public let thermalState: ProcessInfo.ThermalState
     /// Active link (SSID/band or wired); `.offline` when unreadable.
@@ -65,6 +72,9 @@ public struct MetricSample: Sendable {
         batteryPercent: Double?,
         batteryIsCharging: Bool,
         batteryMinutesToFull: Int? = nil,
+        batteryHealthPercent: Double? = nil,
+        batteryCycleCount: Int? = nil,
+        batteryCondition: String? = nil,
         thermalState: ProcessInfo.ThermalState,
         connection: ConnectionInfo = .offline,
         publicIP: PublicIPInfo = .unavailable,
@@ -90,6 +100,9 @@ public struct MetricSample: Sendable {
         self.batteryPercent = batteryPercent
         self.batteryIsCharging = batteryIsCharging
         self.batteryMinutesToFull = batteryMinutesToFull
+        self.batteryHealthPercent = batteryHealthPercent
+        self.batteryCycleCount = batteryCycleCount
+        self.batteryCondition = batteryCondition
         self.thermalState = thermalState
         self.connection = connection
         self.publicIP = publicIP

@@ -13,6 +13,9 @@ public struct SensorSnapshot: Sendable {
     public let batteryPercent: Double?
     public let batteryIsCharging: Bool
     public let batteryMinutesToFull: Int?
+    public let batteryHealthPercent: Double?
+    public let batteryCycleCount: Int?
+    public let batteryCondition: String?
     public let topCpu: [TopProcess]
     public let topMemory: [TopProcess]
     public let networkProcs: [NetworkProcess]
@@ -79,6 +82,9 @@ public actor SensorReader {
             batteryPercent: batteryStatus.percent,
             batteryIsCharging: batteryStatus.isCharging,
             batteryMinutesToFull: batteryStatus.timeToFullMinutes,
+            batteryHealthPercent: batteryStatus.healthPercent,
+            batteryCycleCount: batteryStatus.cycleCount,
+            batteryCondition: batteryStatus.condition,
             topCpu: topCpu,
             topMemory: topMemory,
             networkProcs: networkProcs,

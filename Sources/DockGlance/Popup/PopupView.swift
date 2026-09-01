@@ -356,6 +356,18 @@ struct PopupView: View {
             if let minutes = sample.batteryMinutesToFull, sample.batteryIsCharging {
                 labelRow(appearance.localized("Time to full"), durationText(minutes))
             }
+            if let health = sample.batteryHealthPercent {
+                let condition = sample.batteryCondition.map {
+                    " (\(appearance.localized($0)))"
+                } ?? ""
+                labelRow(
+                    appearance.localized("Health"),
+                    "\(Int((health * 100).rounded()))%\(condition)"
+                )
+            }
+            if let cycles = sample.batteryCycleCount {
+                labelRow(appearance.localized("Cycles"), "\(cycles)")
+            }
         }
     }
 
