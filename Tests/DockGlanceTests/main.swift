@@ -174,4 +174,14 @@ check(
 )
 check("ip location unavailable", PublicIPInfo.unavailable.location == "—")
 
+// Default audio devices: every Mac has a built-in mic and speaker, so the
+// CoreAudio lookup should resolve both on this machine.
+let audio = AudioMonitor().sample()
+check("default microphone named", audio.microphone.name != "—")
+check("default microphone transport", audio.microphone.transport != "—")
+check("default microphone sample rate", (audio.microphone.sampleRate ?? 0) > 0)
+check("default speaker named", audio.speaker.name != "—")
+check("default speaker transport", audio.speaker.transport != "—")
+check("default speaker sample rate", (audio.speaker.sampleRate ?? 0) > 0)
+
 exit(exitCode)

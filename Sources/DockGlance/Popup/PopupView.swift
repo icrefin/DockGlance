@@ -80,7 +80,43 @@ struct PopupView: View {
             bluetoothList
         case .publicIP:
             publicIPDetail
+        case .microphone:
+            audioDetail(store.sample.microphone)
+        case .speaker:
+            audioDetail(store.sample.speaker)
         }
+    }
+
+    // MARK: - Audio devices
+
+    private func audioDetail(_ device: AudioDeviceInfo?) -> some View {
+        let info = device ?? .unavailable
+        return VStack(alignment: .leading, spacing: 5) {
+            labelRow(appearance.localized("Device"), info.name)
+            // The rows below come from the same device lookup; a missing
+            // device needs only the single "—" row above.
+            if info.name != "—" {
+                labelRow(
+                    appearance.localized("Type"),
+                    appearance.localized(info.transport)
+                )
+                if let rate = info.sampleRate {
+                    labelRow(
+                        appearance.localized("Sample rate"),
+                        sampleRateText(rate)
+                    )
+                }
+            }
+        }
+    }
+
+    /// "48 kHz" style sample rate.
+    private func sampleRateText(_ rate: Double) -> String {
+        let khz = rate / 1000
+        let text = khz == khz.rounded()
+            ? String(format: "%.0f", khz)
+            : String(format: "%.1f", khz)
+        return "\(text) kHz"
     }
 
     // MARK: - Temperature

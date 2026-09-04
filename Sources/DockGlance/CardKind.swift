@@ -15,6 +15,8 @@ enum CardKind: String, CaseIterable, Identifiable {
     case time
     case date
     case weather
+    case microphone
+    case speaker
 
     var id: String { rawValue }
 
@@ -33,6 +35,8 @@ enum CardKind: String, CaseIterable, Identifiable {
         case .time: "Time"
         case .date: "Date"
         case .weather: "Weather"
+        case .microphone: "Microphone"
+        case .speaker: "Speaker"
         }
     }
 
@@ -40,7 +44,8 @@ enum CardKind: String, CaseIterable, Identifiable {
     var hasPopup: Bool {
         switch self {
         case .cpu, .memory, .temperature, .disk, .download, .upload,
-             .battery, .weather, .time, .date, .connection, .publicIP: true
+             .battery, .weather, .time, .date, .connection, .publicIP,
+             .microphone, .speaker: true
         }
     }
 }

@@ -31,6 +31,9 @@ struct MetricTile: View {
     var iconRotation: CGFloat = 0
     /// Center the text lines horizontally within the card.
     var centered = false
+    /// Let a long value wrap onto a second row instead of shrinking on one
+    /// line. The icon shrinks to make room for the extra row.
+    var valueWraps = false
 
     @State private var isHovered = false
 
@@ -96,7 +99,8 @@ struct MetricTile: View {
                 .foregroundColor(textColor)
                 .font(.system(size: valueSize, weight: .semibold, design: .rounded))
                 .monospacedDigit()
-                .lineLimit(1)
+                .lineLimit(valueWraps ? 2 : 1)
+                .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
             if let detail {
                 Text(detail)
@@ -119,9 +123,11 @@ struct MetricTile: View {
 
     /// Icon size matching the old layout proportions so visual appearance
     /// stays identical. Derived only from `scale` so it never reacts to text.
+    /// Wrapping cards use a compact icon to leave room for the second row.
     private var iconSize: CGFloat {
         guard !hideIcon else { return 0 }
-        return min(tileHeight * 0.4, contentWidth)
+        let heightFraction: CGFloat = valueWraps ? 0.26 : 0.4
+        return min(tileHeight * heightFraction, contentWidth)
     }
 
     /// Height of the icon region, matching the old layout (icon + spacing).
@@ -152,14 +158,20 @@ struct MetricTile: View {
     }
 
     private func fits(_ size: CGFloat) -> Bool {
-        if measuredWidth(value, at: size) > contentWidth { return false }
+        // A wrapping value may span two rows; a single word longer than one
+        // row still shrinks via the minimum scale factor.
+        let valueWidthLimit = valueWraps ? contentWidth * 2 : contentWidth
+        if measuredWidth(value, at: size) > valueWidthLimit { return false }
         if let detail {
             let dSize = detailValueSized ? size : detailSize(for: size)
             if measuredWidth(detail, at: dSize) > contentWidth { return false }
         }
         // Text budget matches the old layout: remainder after icon region.
         let textLimit = hideIcon ? tileHeight : tileHeight - iconRegionHeight
-        let valueHeight = size * 1.2
+        let valueLines = valueWraps
+            ? min(2, max(1, Int(ceil(measuredWidth(value, at: size) / contentWidth))))
+            : 1
+        let valueHeight = size * 1.2 * CGFloat(valueLines)
         let detailHeight = detail != nil
             ? 2 * scale + (detailValueSized ? size : detailSize(for: size)) * 1.2
             : 0
@@ -174,7 +186,7 @@ struct MetricTile: View {
 
 /// One row of tiles, filtered by the user's card visibility settings.
 /// Cards: CPU, memory, temperature, disk, download, upload, battery,
-/// connection, public IP, time, date, weather.
+/// connection, public IP, time, date, weather, microphone, speaker.
 @MainActor
 struct DashboardView: View {
     /// The dock band thickness that maps to `scale == 1`.
@@ -211,7 +223,8 @@ struct DashboardView: View {
                     detailValueSized: tile.spec.detailValueSized,
                     hideIcon: tile.spec.hideIcon,
                     iconRotation: tile.spec.iconRotation,
-                    centered: tile.spec.centered
+                    centered: tile.spec.centered,
+                    valueWraps: tile.spec.valueWraps
                 )
             }
         }
@@ -241,6 +254,7 @@ struct DashboardView: View {
         var hideIcon = false
         var centered = false
         var iconRotation: CGFloat = 0
+        var valueWraps = false
     }
 
     private func spec(for kind: CardKind) -> TileSpec {
@@ -324,6 +338,22 @@ struct DashboardView: View {
                 icon: sample.weather.symbol ?? "cloud",
                 title: "Weather",
                 value: weatherValue, progress: nil, color: .orange
+            )
+        case .microphone:
+            return TileSpec(
+                icon: "mic.fill",
+                title: "Microphone",
+                value: sample.microphone?.name ?? "—",
+                progress: nil, color: .mint,
+                valueWraps: true
+            )
+        case .speaker:
+            return TileSpec(
+                icon: "hifispeaker.fill",
+                title: "Speaker",
+                value: sample.speaker?.name ?? "—",
+                progress: nil, color: .gray,
+                valueWraps: true
             )
         }
     }

@@ -111,7 +111,9 @@ final class SystemStore {
             dateText: ClockText.date(locale: clockLocale),
             weekdayText: ClockText.weekday(locale: clockLocale),
             location: weather.location,
-            weather: weather.info
+            weather: weather.info,
+            microphone: s.microphone,
+            speaker: s.speaker
         )
     }
 }

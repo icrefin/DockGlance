@@ -54,6 +54,10 @@ public struct MetricSample: Sendable {
     public let location: LocationInfo
     /// Current-conditions weather snapshot.
     public let weather: WeatherInfo
+    /// The default (selected) microphone, nil before the first sample.
+    public let microphone: AudioDeviceInfo?
+    /// The default (selected) output device, nil before the first sample.
+    public let speaker: AudioDeviceInfo?
 
     public init(
         cpuPercent: Double,
@@ -82,7 +86,9 @@ public struct MetricSample: Sendable {
         dateText: String = "",
         weekdayText: String = "",
         location: LocationInfo = .unavailable,
-        weather: WeatherInfo = .unavailable
+        weather: WeatherInfo = .unavailable,
+        microphone: AudioDeviceInfo? = nil,
+        speaker: AudioDeviceInfo? = nil
     ) {
         self.cpuPercent = cpuPercent
         self.topCpu = topCpu
@@ -111,6 +117,8 @@ public struct MetricSample: Sendable {
         self.weekdayText = weekdayText
         self.location = location
         self.weather = weather
+        self.microphone = microphone
+        self.speaker = speaker
     }
 
     public var memoryPercent: Double {

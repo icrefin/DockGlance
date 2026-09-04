@@ -49,6 +49,8 @@ enum L10n {
         "Time": "时间",
         "Date": "日期",
         "Weather": "天气",
+        "Microphone": "麦克风",
+        "Speaker": "扬声器",
 
         // Settings window
         "Language": "语言",
@@ -115,6 +117,23 @@ enum L10n {
         "Organization": "机构",
         "ASN": "ASN",
         "Timezone": "时区",
+        "Device": "设备",
+        "Type": "类型",
+        "Sample rate": "采样率",
+
+        // Audio transport types
+        "Built-in": "内置",
+        "Bluetooth": "蓝牙",
+        "USB": "USB",
+        "HDMI": "HDMI",
+        "DisplayPort": "DisplayPort",
+        "Thunderbolt": "雷雳",
+        "FireWire": "火线",
+        "PCI": "PCI",
+        "AirPlay": "隔空播放",
+        "Virtual": "虚拟",
+        "Aggregate": "聚合",
+        "External": "外接",
 
         // Weather conditions (WMO titles from WeatherMonitor)
         "Clear sky": "晴",

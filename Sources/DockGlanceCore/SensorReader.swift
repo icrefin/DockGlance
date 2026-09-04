@@ -21,6 +21,10 @@ public struct SensorSnapshot: Sendable {
     public let networkProcs: [NetworkProcess]
     public let bluetoothDevices: [String]
     public let fanStatus: FanStatus?
+    /// Default microphone (nil before the first sample).
+    public let microphone: AudioDeviceInfo?
+    /// Default output device (nil before the first sample).
+    public let speaker: AudioDeviceInfo?
 }
 
 /// Samples the monitors that issue subprocess calls (`ps`, `nettop`) and
@@ -39,6 +43,7 @@ public actor SensorReader {
     private let networkProcess = NetworkProcessMonitor()
     private let bluetooth = BluetoothMonitor()
     private let fan = FanUsage()
+    private let audio = AudioMonitor()
 
     private var lastHeavy = Date.distantPast
     private var diskUsed: UInt64 = 0
@@ -56,6 +61,7 @@ public actor SensorReader {
     public func sample() -> SensorSnapshot {
         let mem = memory.sample()
         let net = network.sample()
+        let audioDevices = audio.sample()
         if Date().timeIntervalSince(lastHeavy) >= 5 {
             lastHeavy = Date()
             let diskSample = disk.sample()
@@ -89,7 +95,9 @@ public actor SensorReader {
             topMemory: topMemory,
             networkProcs: networkProcs,
             bluetoothDevices: bluetoothDevices,
-            fanStatus: fanStatus
+            fanStatus: fanStatus,
+            microphone: audioDevices.microphone,
+            speaker: audioDevices.speaker
         )
     }
 }
