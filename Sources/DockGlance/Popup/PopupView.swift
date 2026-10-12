@@ -240,7 +240,8 @@ struct PopupView: View {
     @ViewBuilder
     private var fanLine: some View {
         let status = store.sample.fanStatus
-        if let status, status.count == 0 || status.rpm.isEmpty {
+        if let status, status.count == 0 {
+            // FNum == 0: the firmware reports no fans at all.
             thermalLine(appearance.localized("Fanless"))
         } else if let status, !status.rpm.isEmpty {
             let speeds = status.rpm
@@ -248,6 +249,9 @@ struct PopupView: View {
                 .joined(separator: " / ")
             thermalLine("\(appearance.localized("Fan")): \(speeds) \(appearance.localized("RPM"))")
         }
+        // Fans exist but no speed was readable this round (and a nil status
+        // means the SMC is unreadable): stay silent rather than claiming the
+        // machine is fanless.
     }
 
     /// A body-size line for the thermal popup (slightly larger than the

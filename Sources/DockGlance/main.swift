@@ -75,6 +75,13 @@ private func probe() {
             ?? "nil"
         print("SMC \(key): \(value)  [\(SMC.debugInfo(forKey: key))]")
     }
+    // Fan keys hold a count and a speed, not a temperature — print them raw
+    // and let the FAN line below do the decoding.
+    for key in ["#KEY", "FNum", "F0Ac"] {
+        print("SMC \(key): [\(SMC.debugInfo(forKey: key))]")
+    }
+    let fan = FanUsage().sample()
+    print("FAN: \(fanDescription(fan))")
     let temp = TemperatureUsage().sample()
         .map { String(format: "%.1f°C", $0) } ?? "nil"
     print("TEMP: \(temp)")
@@ -91,4 +98,15 @@ private func probe() {
     let weatherText = weather.info.temperature
         .map { String(format: "%.0f°C", $0) } ?? "n/a"
     print("WEATHER: \(weather.info.title) \(weatherText)")
+}
+
+/// One-line fan summary for the probe, keeping "unreadable" and "fanless"
+/// visibly distinct.
+private func fanDescription(_ status: FanStatus?) -> String {
+    guard let status else { return "unavailable (SMC unreadable)" }
+    guard status.count > 0 else { return "fanless (FNum = 0)" }
+    let speeds = status.rpm
+        .map { String(format: "%.0f", $0) }
+        .joined(separator: " / ")
+    return "\(status.count) fan(s): \(speeds.isEmpty ? "speed unreadable" : speeds + " RPM")"
 }

@@ -136,6 +136,30 @@ check("weekday is short name", ClockText.weekday(noon) == "Sat")
 // SMC C struct must be exactly 80 bytes to match the kernel struct.
 check("SMC key struct is 80 bytes", SMC.keyDataSize == 80)
 
+// SMC payload decoding: Apple Silicon publishes fan speed as "flt ",
+// Intel firmware as "fpe2".
+let fltBytes = withUnsafeBytes(of: Float(5130.5).bitPattern.littleEndian) { Array($0) }
+check("SMC flt decodes fan speed", SMC.floatValue(fltBytes).map { abs($0 - 5130.5) < 0.01 } == true)
+check("SMC flt tolerates extra bytes", SMC.floatValue(fltBytes + [0, 0]) != nil)
+check("SMC flt rejects short payload", SMC.floatValue([0x00, 0x01]) == nil)
+check("SMC flt rejects NaN", SMC.floatValue([0x00, 0x00, 0xc0, 0x7f]) == nil)
+check("SMC fpe2 decodes 2500 RPM", SMC.fixedPointValue([0x27, 0x10]) == 2500)
+check("SMC fpe2 rejects short payload", SMC.fixedPointValue([0x27]) == nil)
+
+// Fan counting must keep "unknown" (unreadable SMC) apart from "fanless"
+// (readable SMC that exposes no fan) — conflating them is the bug that
+// labelled every Apple-Silicon Mac as fanless.
+check("fan count trusts FNum",
+      FanUsage.resolveFanCount(reported: 2, responsive: true, fansWithSpeed: 2) == 2)
+check("FNum = 0 means fanless",
+      FanUsage.resolveFanCount(reported: 0, responsive: true, fansWithSpeed: 0) == 0)
+check("missing FNum falls back to a fan that reports speed",
+      FanUsage.resolveFanCount(reported: nil, responsive: true, fansWithSpeed: 2) == 2)
+check("responsive SMC without fan keys is fanless",
+      FanUsage.resolveFanCount(reported: nil, responsive: true, fansWithSpeed: 0) == 0)
+check("unresponsive SMC is unknown, not fanless",
+      FanUsage.resolveFanCount(reported: nil, responsive: false, fansWithSpeed: 0) == nil)
+
 // Top-process monitors read local system state.
 let tops = ProcessMonitor().sample()
 check("top CPU process parsed", tops.cpu.first?.name.isEmpty == false)
