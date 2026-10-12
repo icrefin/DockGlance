@@ -77,7 +77,7 @@ struct PopupView: View {
         case .temperature:
             thermalDetail
         case .connection:
-            bluetoothList
+            connectionDetail
         case .publicIP:
             publicIPDetail
         case .microphone:
@@ -254,6 +254,31 @@ struct PopupView: View {
     /// generic detail rows).
     private func thermalLine(_ text: String) -> some View {
         Text(text).font(.system(size: 13)).foregroundStyle(textColor)
+    }
+
+    // MARK: - Connection: LAN address + Bluetooth devices
+
+    /// The active link's LAN address, then the paired Bluetooth devices.
+    private var connectionDetail: some View {
+        let connection = store.sample.connection
+        return VStack(alignment: .leading, spacing: 8) {
+            labelRow(
+                appearance.localized("LAN IP"),
+                connection.lanIP ?? "—"
+            )
+            VStack(alignment: .leading, spacing: 5) {
+                sectionLabel(appearance.localized("Bluetooth"))
+                bluetoothList
+            }
+        }
+    }
+
+    /// A dimmed caption for a pop-up's sub-sections (sits below the title).
+    private func sectionLabel(_ text: String) -> some View {
+        Text(text.uppercased())
+            .font(.system(size: 9, weight: .bold))
+            .kerning(0.6)
+            .foregroundStyle(textColor.opacity(0.45))
     }
 
     // MARK: - Bluetooth devices

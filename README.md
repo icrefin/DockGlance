@@ -70,9 +70,9 @@ Dock icons, the remaining cards continue from the right side of the Dock.
 Additional flourishes:
 
 - **Hover pop-ups** — detailed panels for CPU, memory, battery, weather,
-time (a monthly calendar), disk, network, connection (paired Bluetooth
-devices) and temperature (2-minute trend sparkline with min/max level
-lines and fan state).
+time (a monthly calendar), disk, network, connection (LAN IP and paired
+Bluetooth devices) and temperature (2-minute trend sparkline with min/max
+level lines and fan state).
 - **Profiles** — save and restore complete card configurations (cards,
 sizes, colors, offsets) and switch between them from the menu; profiles
 also record which display they were made on and are re-applied

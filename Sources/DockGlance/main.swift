@@ -83,7 +83,7 @@ private func probe() {
         ?? "n/a"
     print("BATT: \(batteryText) charging=\(battery.isCharging) plugged=\(battery.isPluggedIn)")
     let connection = ConnectionMonitor().sample()
-    print("CONN: \(connection.summary) [\(connection.detail)]")
+    print("CONN: \(connection.summary) [\(connection.detail)] LAN=\(connection.lanIP ?? "—")")
     print("CLOCK: \(ClockText.time()) \(ClockText.date())")
     let weather = WeatherMonitor()
     weather.refreshIfNeeded()

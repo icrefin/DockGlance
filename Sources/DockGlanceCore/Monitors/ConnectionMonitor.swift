@@ -12,9 +12,12 @@ public struct ConnectionInfo: Sendable, Equatable {
     public let interfaceName: String?
     /// True when the active link is wired Ethernet.
     public let isWired: Bool
+    /// Local (LAN) IPv4 address of the active link; nil when the link is
+    /// down or carries no IPv4 address.
+    public let lanIP: String?
 
     public static let offline = ConnectionInfo(
-        ssid: nil, band: nil, interfaceName: nil, isWired: false
+        ssid: nil, band: nil, interfaceName: nil, isWired: false, lanIP: nil
     )
 
     /// Short primary text for the tile (SSID, "Wired", "Wi-Fi", "Offline").
@@ -46,11 +49,13 @@ public final class ConnectionMonitor {
         let wifi = CWWiFiClient().interface()
         if let ssid = wifi?.ssid(), !ssid.isEmpty,
            let channel = wifi?.wlanChannel() {
+            let name = wifi?.interfaceName
             return ConnectionInfo(
                 ssid: ssid,
                 band: bandLabel(for: channel.channelBand),
-                interfaceName: wifi?.interfaceName,
-                isWired: false
+                interfaceName: name,
+                isWired: false,
+                lanIP: name.flatMap(ipv4Address(of:))
             )
         }
         // No readable SSID (e.g. location permission not granted yet):
@@ -60,7 +65,8 @@ public final class ConnectionMonitor {
                 ssid: nil,
                 band: nil,
                 interfaceName: name,
-                isWired: interfaceKind(name) == .wired
+                isWired: interfaceKind(name) == .wired,
+                lanIP: ipv4Address(of: name)
             )
         }
         return .offline
@@ -89,6 +95,33 @@ public final class ConnectionMonitor {
                entry.ifa_flags & UInt32(IFF_UP | IFF_RUNNING) != 0 {
                 let name = String(cString: entry.ifa_name)
                 if name.hasPrefix("en") { return name }
+            }
+            guard let next = entry.ifa_next else { break }
+            cursor = next
+        }
+        return nil
+    }
+
+    /// Numeric IPv4 address bound to `name`, e.g. "192.168.1.42"; nil when
+    /// the interface is down or has no IPv4 address (IPv6-only links).
+    private func ipv4Address(of name: String) -> String? {
+        var head: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&head) == 0, let head else { return nil }
+        defer { freeifaddrs(head) }
+
+        var cursor = head
+        while true {
+            let entry = cursor.pointee
+            if String(cString: entry.ifa_name) == name,
+               let address = entry.ifa_addr,
+               address.pointee.sa_family == UInt8(AF_INET) {
+                var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+                let status = getnameinfo(
+                    address, socklen_t(address.pointee.sa_len),
+                    &host, socklen_t(host.count),
+                    nil, 0, NI_NUMERICHOST
+                )
+                if status == 0 { return String(cString: host) }
             }
             guard let next = entry.ifa_next else { break }
             cursor = next

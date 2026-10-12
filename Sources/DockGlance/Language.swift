@@ -109,6 +109,7 @@ enum L10n {
         "h": "小时",
         "min": "分钟",
         "IP address": "IP 地址",
+        "LAN IP": "局域网 IP",
         "Country": "国家",
         "Region": "地区",
         "City": "城市",
