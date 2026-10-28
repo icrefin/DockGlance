@@ -70,9 +70,9 @@ Dock icons, the remaining cards continue from the right side of the Dock.
 Additional flourishes:
 
 - **Hover pop-ups** — detailed panels for CPU, memory, battery, weather,
-time (a monthly calendar), disk, network, connection (LAN IP and paired
-Bluetooth devices) and temperature (2-minute trend sparkline with min/max
-level lines and fan state).
+time (a monthly calendar with month/year navigation), disk, network,
+connection (LAN IP and paired Bluetooth devices) and temperature (2-minute
+trend sparkline with min/max level lines and fan state).
 - **Profiles** — save and restore complete card configurations (cards,
 sizes, colors, offsets) and switch between them from the menu; profiles
 also record which display they were made on and are re-applied
@@ -184,7 +184,7 @@ Dock 旁边的空白条带上。
 
 其他亮点：
 
-- **悬停弹窗**——CPU、内存、电池、天气、时间（月历）、磁盘、网络、
+- **悬停弹窗**——CPU、内存、电池、天气、时间（可翻月/翻年、可跳选年月的月历）、磁盘、网络、
 连接（已配对蓝牙设备）、温度（带最小/最大参考线的 2 分钟趋势迷你
 图 + 风扇状态）均有详细面板。
 - **配置（Profiles）**——保存/恢复整套卡片配置（卡片、尺寸、颜色、

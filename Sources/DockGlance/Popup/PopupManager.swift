@@ -13,10 +13,14 @@ final class PopupManager {
     private var hideTask: Task<Void, Never>?
     /// The tile the popup currently belongs to, for move-deduplication.
     private var active: (panel: WidgetPanel, index: Int)?
+    /// Whether the pointer is currently inside the popup itself. Interactive
+    /// popups (the calendar) must stay open while the user clicks controls.
+    private var pointerInsidePopup = false
 
-    /// Delay before the popup hides after the pointer leaves a card, so
-    /// moving across the small gaps between tiles does not flicker.
-    private static let hideDelay: TimeInterval = 0.15
+    /// Delay before the popup hides after the pointer leaves a card: long
+    /// enough to cross the gap up into the popup, whose own tracking area
+    /// then cancels the hide.
+    private static let hideDelay: TimeInterval = 0.28
 
     /// Pointer moved to x (panel-local coordinate) inside `widget`.
     /// Shows the hovered card's pop-up; the tile layout is deterministic
@@ -64,20 +68,40 @@ final class PopupManager {
         )
     }
 
-    /// Hides the popup shortly after the pointer leaves a card.
+    /// Hides the popup shortly after the pointer leaves a card. A pointer
+    /// that is inside the popup (or lands there before the delay expires)
+    /// keeps it open.
     func hide() {
         hideTask?.cancel()
         hideTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(Self.hideDelay))
             guard !Task.isCancelled else { return }
-            self?.panel?.orderOut(nil)
+            guard let self else { return }
+            guard !self.pointerInsidePopup else { return }
+            self.panel?.orderOut(nil)
+            self.pointerInsidePopup = false
         }
+    }
+
+    /// The pointer entered the popup: cancel any pending hide.
+    func pointerEnteredPopup() {
+        pointerInsidePopup = true
+        hideTask?.cancel()
+        hideTask = nil
+    }
+
+    /// The pointer left the popup: hide unless it moved back onto a card
+    /// (whose hover callback cancels the hide again).
+    func pointerExitedPopup() {
+        pointerInsidePopup = false
+        hide()
     }
 
     /// Closes the popup immediately (e.g. when the panels are rebuilt).
     func closeNow() {
         hideTask?.cancel()
         active = nil
+        pointerInsidePopup = false
         panel?.orderOut(nil)
     }
 
@@ -90,6 +114,7 @@ final class PopupManager {
         anchorScreen: NSScreen?
     ) {
         let popup = panel ?? makePanel()
+        pointerInsidePopup = false
         popup.display(kind: kind, appearance: appearance, store: store)
         let size = popup.contentSize
         popup.setFrame(
@@ -101,6 +126,8 @@ final class PopupManager {
 
     private func makePanel() -> PopupPanel {
         let popup = PopupPanel()
+        popup.onPointerEnter = { [weak self] in self?.pointerEnteredPopup() }
+        popup.onPointerExit = { [weak self] in self?.pointerExitedPopup() }
         panel = popup
         return popup
     }
@@ -125,9 +152,14 @@ final class PopupManager {
 }
 
 /// A borderless, non-activating panel that floats above every window and
-/// hosts the hover popup's SwiftUI content.
+/// hosts the hover popup's SwiftUI content. Its content is interactive
+/// (calendar navigation), so the hosting view accepts first clicks and
+/// reports pointer entry/exit; the manager keeps the popup open while the
+/// pointer is inside it.
 private final class PopupPanel: NSPanel {
-    private var host: NSHostingView<AnyView>?
+    var onPointerEnter: (() -> Void)?
+    var onPointerExit: (() -> Void)?
+    private var host: PopupHostingView?
 
     init() {
         super.init(
@@ -153,8 +185,10 @@ private final class PopupPanel: NSPanel {
         let view = PopupView(kind: kind)
             .environment(appearance)
             .environment(store)
-        let host = NSHostingView(rootView: AnyView(view))
+        let host = PopupHostingView(rootView: AnyView(view))
         host.wantsLayer = true
+        host.onPointerEnter = { [weak self] in self?.onPointerEnter?() }
+        host.onPointerExit = { [weak self] in self?.onPointerExit?() }
         self.host = host
         contentView = host
         host.layoutSubtreeIfNeeded()
@@ -173,5 +207,35 @@ private final class PopupPanel: NSPanel {
             width: fitted.width > 0 ? fitted.width : 260,
             height: fitted.height > 0 ? fitted.height : 200
         )
+    }
+}
+
+/// Hosting view that makes the popup clickable even though the app is not
+/// active (e.g. the pointer is in another app and only the hover popup is
+/// visible), and reports pointer entry/exit for the hold-open logic.
+private final class PopupHostingView: NSHostingView<AnyView> {
+    var onPointerEnter: (() -> Void)?
+    var onPointerExit: (() -> Void)?
+
+    /// Deliver the first click even though the window is not key/active.
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        trackingAreas.forEach(removeTrackingArea)
+        addTrackingArea(NSTrackingArea(
+            rect: .zero,
+            options: [.activeAlways, .mouseEnteredAndExited, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        ))
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        onPointerEnter?()
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        onPointerExit?()
     }
 }

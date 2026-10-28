@@ -73,7 +73,7 @@ struct PopupView: View {
         case .time:
             tickingClock
         case .date:
-            calendarView
+            CalendarDetailView()
         case .temperature:
             thermalDetail
         case .connection:
@@ -568,92 +568,6 @@ struct PopupView: View {
         let locale = appearance.language.locale
         return "\(ClockText.weekday(date, locale: locale)), \(ClockText.date(date, locale: locale))"
     }
-
-    // MARK: - Monthly calendar
-
-    /// A month grid with the real calendar's weekday offset (1 = Sunday),
-    /// today highlighted. Refreshes once a minute.
-    private var calendarView: some View {
-        TimelineView(.periodic(from: .now, by: 60)) { context in
-            VStack(alignment: .leading, spacing: 6) {
-                Text(
-                    context.date.formatted(
-                        Date.FormatStyle(locale: appearance.language.locale)
-                            .month(.wide).year()
-                    )
-                )
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(textColor)
-                HStack(spacing: 0) {
-                    ForEach(Self.weekdayHeaders[appearance.language] ?? [], id: \.self) { header in
-                        Text(header)
-                            .font(.system(size: 10))
-                            .frame(maxWidth: .infinity)
-                            .foregroundStyle(textColor.opacity(0.55))
-                    }
-                }
-                ForEach(Array(monthGrid(for: context.date).enumerated()), id: \.offset) { _, week in
-                    HStack(spacing: 0) {
-                        ForEach(Array(week.enumerated()), id: \.offset) { _, day in
-                            dayCell(day)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func dayCell(_ day: (day: Int?, isToday: Bool)) -> some View {
-        if let number = day.day {
-            Text("\(number)")
-                .font(.system(size: 11, weight: day.isToday ? .bold : .regular))
-                .monospacedDigit()
-                .frame(width: 22, height: 22)
-                .background(
-                    Circle().fill(day.isToday ? textColor : .clear)
-                )
-                .foregroundStyle(day.isToday ? appearance.backgroundColor : textColor)
-        } else {
-            Color.clear.frame(width: 22, height: 22)
-        }
-    }
-
-    private func monthGrid(
-        for date: Date
-    ) -> [[(day: Int?, isToday: Bool)]] {
-        let calendar = Calendar.current
-        guard let monthStart = calendar.dateInterval(of: .month, for: date)?.start
-        else { return [] }
-        let dayRange = calendar.range(of: .day, in: .month, for: monthStart)
-        let leading = calendar.component(.weekday, from: monthStart) - 1
-        var rows: [[(day: Int?, isToday: Bool)]] = []
-        var row: [(day: Int?, isToday: Bool)] = Array(
-            repeating: (nil, false), count: leading
-        )
-        for day in dayRange ?? 1..<1 {
-            let dayStart = calendar.date(
-                byAdding: .day, value: day - 1, to: monthStart
-            ) ?? Date.distantPast
-            row.append((day, calendar.isDateInToday(dayStart)))
-            if row.count == 7 {
-                rows.append(row)
-                row = []
-            }
-        }
-        if !row.isEmpty {
-            row += Array(repeating: (nil, false), count: 7 - row.count)
-            rows.append(row)
-        }
-        return rows
-    }
-
-    /// Column headers, Sunday-first, indexed by language.
-    private static let weekdayHeaders: [Language: [String]] = [
-        .english: ["S", "M", "T", "W", "T", "F", "S"],
-        .chinese: ["日", "一", "二", "三", "四", "五", "六"],
-    ]
 
     private var textColor: Color { appearance.textColor }
 

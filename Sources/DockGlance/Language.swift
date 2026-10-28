@@ -122,6 +122,15 @@ enum L10n {
         "Type": "类型",
         "Sample rate": "采样率",
 
+        // Calendar pop-up
+        "Today": "今天",
+        "Previous month": "上一月",
+        "Next month": "下一月",
+        "Previous year": "上一年",
+        "Next year": "下一年",
+        "Choose month and year": "选择年月",
+        "Show calendar": "显示日历",
+
         // Audio transport types
         "Built-in": "内置",
         "Bluetooth": "蓝牙",
